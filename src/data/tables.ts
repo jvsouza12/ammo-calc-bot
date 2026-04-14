@@ -87,11 +87,13 @@ export const drogas: TableItem[] = [
 export function formatNumber(n: number): string {
   if (n >= 1_000_000) {
     const val = n / 1_000_000;
-    return val % 1 === 0 ? val.toFixed(0) + 'KK' : val.toFixed(1) + 'KK';
+    const str = val % 1 === 0 ? val.toFixed(0) : val.toFixed(1).replace('.', ',');
+    return str + 'KK';
   }
   if (n >= 1_000) {
     const val = n / 1_000;
-    return val % 1 === 0 ? val.toFixed(0) + 'K' : val.toFixed(1) + 'K';
+    const str = val % 1 === 0 ? val.toFixed(0) : val.toFixed(1).replace('.', ',');
+    return str + 'K';
   }
-  return n.toString();
+  return n.toLocaleString('pt-BR');
 }
