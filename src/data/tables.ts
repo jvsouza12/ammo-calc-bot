@@ -12,10 +12,9 @@ export interface PercentItem {
   parceria: string;
 }
 
-// Helper: parse K/KK values to raw numbers
-// 1K = 1000, 1KK = 1000000
 function parseValue(val: string): number {
-  const v = val.replace(/\./g, '').replace(/,/g, '.');
+  // Don't strip dots — they are decimal separators here (1.8K = 1800)
+  const v = val.trim();
   if (v.includes('KK')) return parseFloat(v.replace('KK', '')) * 1_000_000;
   if (v.includes('K')) return parseFloat(v.replace('K', '')) * 1_000;
   return parseFloat(v);
@@ -86,7 +85,13 @@ export const drogas: TableItem[] = [
 ];
 
 export function formatNumber(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'KK';
-  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  if (n >= 1_000_000) {
+    const val = n / 1_000_000;
+    return val % 1 === 0 ? val.toFixed(0) + 'KK' : val.toFixed(1) + 'KK';
+  }
+  if (n >= 1_000) {
+    const val = n / 1_000;
+    return val % 1 === 0 ? val.toFixed(0) + 'K' : val.toFixed(1) + 'K';
+  }
   return n.toString();
 }
