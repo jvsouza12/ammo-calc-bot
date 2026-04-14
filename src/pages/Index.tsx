@@ -13,10 +13,25 @@ const tabs = [
   { id: "tables", label: "Tabelas", icon: "📋" },
 ];
 
+const AnimatedSection = ({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) => {
+  const { ref, isVisible } = useInView();
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0) scale(1)" : "translateY(30px) scale(0.97)",
+        transition: `opacity 0.6s ease-out ${delay}s, transform 0.6s ease-out ${delay}s`,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState("calc");
-  const { ref: heroRef, isVisible: heroVisible } = useInView();
-  const { ref: footerRef, isVisible: footerVisible } = useInView();
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -63,10 +78,7 @@ const Index = () => {
       </header>
 
       {/* Hero Banner */}
-      <div
-        ref={heroRef}
-        className={`max-w-6xl mx-auto px-4 pt-10 pb-6 opacity-0 ${heroVisible ? "animate-in" : ""}`}
-      >
+      <AnimatedSection className="max-w-6xl mx-auto px-4 pt-10 pb-6">
         <div className="glass rounded-2xl p-8 md:p-10 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
           <div className="relative">
@@ -78,28 +90,26 @@ const Index = () => {
               Todas as tabelas de preços e calculadora automática para a facção de munição.
             </p>
             <div className="flex items-center justify-center gap-6 mt-6">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                5 categorias
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                30+ itens
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                Cálculo automático
-              </div>
+              {["5 categorias", "30+ itens", "Cálculo automático"].map(text => (
+                <div key={text} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                  {text}
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      </AnimatedSection>
 
       <main className="max-w-6xl mx-auto px-4 pb-8 space-y-8 relative z-10">
         {activeTab === "calc" && (
           <>
-            <Calculator />
-            <MuniCalculator />
+            <AnimatedSection delay={0.1}>
+              <Calculator />
+            </AnimatedSection>
+            <AnimatedSection delay={0.2}>
+              <MuniCalculator />
+            </AnimatedSection>
           </>
         )}
 
@@ -119,7 +129,7 @@ const Index = () => {
       </main>
 
       {/* Footer with strong Modesto branding */}
-      <footer ref={footerRef} className={`border-t border-border/50 py-12 mt-12 relative opacity-0 ${footerVisible ? "animate-in" : ""}`}>
+      <AnimatedSection className="border-t border-border/50 py-12 mt-12 relative">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-3 mb-4">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
@@ -129,13 +139,11 @@ const Index = () => {
               MODESTO
             </span>
           </div>
-          <p className="text-muted-foreground text-xs">
-            Desenvolvedor & Designer
-          </p>
+          <p className="text-muted-foreground text-xs">Desenvolvedor & Designer</p>
           <div className="mt-4 h-px w-24 mx-auto bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
           <p className="text-muted-foreground/40 text-[10px] mt-4 uppercase tracking-widest">Brasil RP — 2026</p>
         </div>
-      </footer>
+      </AnimatedSection>
     </div>
   );
 };
