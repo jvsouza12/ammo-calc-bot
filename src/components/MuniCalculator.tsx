@@ -20,7 +20,15 @@ const MuniCalculator = () => {
   }, [priceType]);
 
   return (
-    <div ref={ref} className={`glass rounded-2xl overflow-hidden neon-glow opacity-0 ${isVisible ? "animate-in animate-in-delay-1" : ""}`}>
+    <div
+      ref={ref}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0) scale(1)" : "translateY(30px) scale(0.97)",
+        transition: "opacity 0.6s ease-out 0.1s, transform 0.6s ease-out 0.1s",
+      }}
+      className="glass rounded-2xl overflow-hidden neon-glow"
+    >
       <div className="px-5 py-4 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-3">
           <span className="text-2xl">⚡</span>

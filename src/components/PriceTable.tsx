@@ -14,7 +14,12 @@ const PriceTable = ({ title, items, icon, percentInfo }: PriceTableProps) => {
   return (
     <div
       ref={ref}
-      className={`glass rounded-2xl overflow-hidden group hover:neon-glow transition-all duration-500 opacity-0 ${isVisible ? "animate-in" : ""}`}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0) scale(1)" : "translateY(30px) scale(0.97)",
+        transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+      }}
+      className="glass rounded-2xl overflow-hidden group hover:neon-glow transition-shadow duration-500"
     >
       <div className="px-5 py-4 flex items-center gap-3 border-b border-border/50">
         <span className="text-2xl">{icon}</span>
@@ -40,11 +45,8 @@ const PriceTable = ({ title, items, icon, percentInfo }: PriceTableProps) => {
                 <td className="px-5 py-3 text-right font-mono font-semibold text-primary">{percentInfo.parceria}</td>
               </tr>
             )}
-            {items.map((item, i) => (
-              <tr
-                key={item.item}
-                className="border-t border-border/30 hover:bg-primary/5 transition-colors duration-200"
-              >
+            {items.map((item) => (
+              <tr key={item.item} className="border-t border-border/30 hover:bg-primary/5 transition-colors duration-200">
                 <td className="px-5 py-3 text-center font-mono text-muted-foreground text-xs">1</td>
                 <td className="px-5 py-3 font-semibold">{item.item}</td>
                 <td className="px-5 py-3 text-right font-mono font-semibold text-primary">{item.precoLabel}</td>
