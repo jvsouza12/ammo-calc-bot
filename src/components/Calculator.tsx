@@ -1,20 +1,15 @@
 import { useState, useMemo } from "react";
-import { armas, municao, lavagem, desmanche, drogas, formatNumber, TableItem } from "@/data/tables";
+import { armas, municao, lavagem, desmanche, drogas, formatNumber } from "@/data/tables";
 
 type PriceType = "preco" | "parceria";
 
 const allCategories = [
-  { label: "Armas", items: armas },
-  { label: "Munição", items: municao },
-  { label: "Lavagem", items: lavagem },
-  { label: "Desmanche", items: desmanche },
-  { label: "Drogas", items: drogas },
+  { label: "Munição", items: municao, icon: "🔫" },
+  { label: "Armas", items: armas, icon: "💣" },
+  { label: "Lavagem", items: lavagem, icon: "💰" },
+  { label: "Desmanche", items: desmanche, icon: "🔧" },
+  { label: "Drogas", items: drogas, icon: "💊" },
 ];
-
-// Build flat list of all items with category
-const allItems = allCategories.flatMap(cat =>
-  cat.items.map(item => ({ ...item, category: cat.label }))
-);
 
 const Calculator = () => {
   const [sourceCategory, setSourceCategory] = useState("Munição");
@@ -41,7 +36,6 @@ const Calculator = () => {
     return { needed, totalSource, totalTarget };
   }, [source, target, priceType, quantity]);
 
-  // Auto-select first item when category changes
   const handleSourceCat = (cat: string) => {
     setSourceCategory(cat);
     const items = allCategories.find(c => c.label === cat)?.items || [];
@@ -54,80 +48,94 @@ const Calculator = () => {
   };
 
   return (
-    <div className="rounded-lg border border-primary/30 bg-card p-6 neon-border-strong">
-      <h3 className="font-display text-3xl text-primary neon-text mb-6 text-center tracking-wider">
-        CALCULADORA
-      </h3>
-
-      <div className="flex items-center gap-2 justify-center mb-6">
-        <button
-          onClick={() => setPriceType("preco")}
-          className={`px-4 py-2 rounded font-bold text-sm transition-all ${priceType === "preco" ? "bg-primary text-primary-foreground neon-border" : "bg-secondary text-secondary-foreground"}`}
-        >
-          PREÇO NORMAL
-        </button>
-        <button
-          onClick={() => setPriceType("parceria")}
-          className={`px-4 py-2 rounded font-bold text-sm transition-all ${priceType === "parceria" ? "bg-primary text-primary-foreground neon-border" : "bg-secondary text-secondary-foreground"}`}
-        >
-          PARCERIA
-        </button>
+    <div className="glass rounded-2xl p-6 md:p-8 neon-glow-strong">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h3 className="font-extrabold text-2xl md:text-3xl tracking-tight">
+            Calculadora
+          </h3>
+          <p className="text-muted-foreground text-sm mt-1">Calcule trocas entre qualquer item</p>
+        </div>
+        <div className="flex bg-secondary rounded-xl p-1 gap-1">
+          {(["preco", "parceria"] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => setPriceType(t)}
+              className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                priceType === t
+                  ? "bg-primary text-primary-foreground shadow-lg"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t === "preco" ? "Preço" : "Parceria"}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-6 items-end">
         {/* Source */}
         <div className="space-y-3">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Tenho / Quero usar</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tenho / Quero usar</label>
           <select
             value={sourceCategory}
             onChange={e => handleSourceCat(e.target.value)}
-            className="w-full bg-secondary text-secondary-foreground rounded px-3 py-2 text-sm font-semibold border border-border focus:border-primary focus:outline-none"
+            className="w-full bg-secondary/80 text-foreground rounded-xl px-4 py-3 text-sm font-semibold border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
           >
-            {allCategories.map(c => <option key={c.label} value={c.label}>{c.label}</option>)}
+            {allCategories.map(c => <option key={c.label} value={c.label}>{c.icon} {c.label}</option>)}
           </select>
           <select
             value={sourceItem}
             onChange={e => setSourceItem(e.target.value)}
-            className="w-full bg-secondary text-secondary-foreground rounded px-3 py-2 text-sm font-semibold border border-border focus:border-primary focus:outline-none"
+            className="w-full bg-secondary/80 text-foreground rounded-xl px-4 py-3 text-sm font-semibold border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
           >
             {sourceItems.map(i => (
-              <option key={i.item} value={i.item}>{i.item} — {priceType === "preco" ? i.precoLabel : i.parceriaLabel}</option>
+              <option key={i.item} value={i.item}>
+                {i.item} — {priceType === "preco" ? i.precoLabel : i.parceriaLabel}
+              </option>
             ))}
           </select>
           {source && (
-            <div className="text-xs text-muted-foreground">
-              Valor unitário: <span className="text-primary font-mono font-bold">{formatNumber(priceType === "preco" ? source.preco : source.parceria)}</span>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Unitário: <span className="text-primary font-mono font-bold">{formatNumber(priceType === "preco" ? source.preco : source.parceria)}</span>
+            </p>
           )}
+        </div>
+
+        {/* Arrow */}
+        <div className="hidden md:flex items-center justify-center text-primary text-3xl pb-6">
+          →
         </div>
 
         {/* Target */}
         <div className="space-y-3">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Quero comprar</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Quero comprar</label>
           <select
             value={targetCategory}
             onChange={e => handleTargetCat(e.target.value)}
-            className="w-full bg-secondary text-secondary-foreground rounded px-3 py-2 text-sm font-semibold border border-border focus:border-primary focus:outline-none"
+            className="w-full bg-secondary/80 text-foreground rounded-xl px-4 py-3 text-sm font-semibold border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
           >
-            {allCategories.map(c => <option key={c.label} value={c.label}>{c.label}</option>)}
+            {allCategories.map(c => <option key={c.label} value={c.label}>{c.icon} {c.label}</option>)}
           </select>
           <select
             value={targetItem}
             onChange={e => setTargetItem(e.target.value)}
-            className="w-full bg-secondary text-secondary-foreground rounded px-3 py-2 text-sm font-semibold border border-border focus:border-primary focus:outline-none"
+            className="w-full bg-secondary/80 text-foreground rounded-xl px-4 py-3 text-sm font-semibold border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
           >
             {targetItems.map(i => (
-              <option key={i.item} value={i.item}>{i.item} — {priceType === "preco" ? i.precoLabel : i.parceriaLabel}</option>
+              <option key={i.item} value={i.item}>
+                {i.item} — {priceType === "preco" ? i.precoLabel : i.parceriaLabel}
+              </option>
             ))}
           </select>
-          <div className="flex items-center gap-2">
-            <label className="text-xs text-muted-foreground">Qtd:</label>
+          <div className="flex items-center gap-3">
+            <label className="text-xs text-muted-foreground font-medium">Qtd:</label>
             <input
               type="number"
               min={1}
               value={quantity}
               onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-20 bg-secondary text-secondary-foreground rounded px-3 py-2 text-sm font-mono border border-border focus:border-primary focus:outline-none"
+              className="w-24 bg-secondary/80 text-foreground rounded-xl px-4 py-3 text-sm font-mono border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
             />
           </div>
         </div>
@@ -135,16 +143,18 @@ const Calculator = () => {
 
       {/* Result */}
       {result && source && target && (
-        <div className="mt-6 p-4 rounded-lg bg-primary/10 border border-primary/30 text-center">
-          <p className="text-lg font-bold">
-            Para comprar <span className="text-primary">{quantity}x {target.item}</span>
+        <div className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 text-center">
+          <p className="text-sm text-muted-foreground">
+            Para comprar <span className="text-foreground font-bold">{quantity}x {target.item}</span>
           </p>
-          <p className="text-3xl font-display text-primary neon-text mt-2 tracking-wider">
-            {result.needed}x {source.item}
+          <p className="text-4xl md:text-5xl font-extrabold text-primary neon-text mt-3 tracking-tight">
+            {result.needed.toLocaleString('pt-BR')}x {source.item}
           </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Custo total: {formatNumber(result.totalTarget)} | Valor em {source.item}: {formatNumber(result.totalSource)}
-          </p>
+          <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+            <span>Custo: <span className="text-foreground font-mono">{formatNumber(result.totalTarget)}</span></span>
+            <span className="h-3 w-px bg-border" />
+            <span>Total em {source.item}: <span className="text-foreground font-mono">{formatNumber(result.totalSource)}</span></span>
+          </div>
         </div>
       )}
     </div>
