@@ -1,4 +1,5 @@
 import { TableItem } from "@/data/tables";
+import { useInView } from "@/hooks/use-in-view";
 
 interface PriceTableProps {
   title: string;
@@ -8,16 +9,18 @@ interface PriceTableProps {
 }
 
 const PriceTable = ({ title, items, icon, percentInfo }: PriceTableProps) => {
+  const { ref, isVisible } = useInView();
+
   return (
-    <div className="glass rounded-2xl overflow-hidden group hover:neon-glow transition-all duration-500">
-      {/* Header */}
+    <div
+      ref={ref}
+      className={`glass rounded-2xl overflow-hidden group hover:neon-glow transition-all duration-500 opacity-0 ${isVisible ? "animate-in" : ""}`}
+    >
       <div className="px-5 py-4 flex items-center gap-3 border-b border-border/50">
         <span className="text-2xl">{icon}</span>
         <h3 className="font-extrabold text-lg tracking-wide text-foreground uppercase">{title}</h3>
         <div className="ml-auto h-2 w-2 rounded-full bg-primary animate-pulse" />
       </div>
-
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -41,7 +44,6 @@ const PriceTable = ({ title, items, icon, percentInfo }: PriceTableProps) => {
               <tr
                 key={item.item}
                 className="border-t border-border/30 hover:bg-primary/5 transition-colors duration-200"
-                style={{ animationDelay: `${i * 50}ms` }}
               >
                 <td className="px-5 py-3 text-center font-mono text-muted-foreground text-xs">1</td>
                 <td className="px-5 py-3 font-semibold">{item.item}</td>
