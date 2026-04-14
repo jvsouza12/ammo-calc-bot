@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
 import { armas, municao, formatNumber } from "@/data/tables";
+import { useInView } from "@/hooks/use-in-view";
 
 type PriceType = "preco" | "parceria";
 
 const MuniCalculator = () => {
   const [priceType, setPriceType] = useState<PriceType>("preco");
+  const { ref, isVisible } = useInView();
 
   const rows = useMemo(() => {
     return armas.map((arma) => {
@@ -18,7 +20,15 @@ const MuniCalculator = () => {
   }, [priceType]);
 
   return (
-    <div className="glass rounded-2xl overflow-hidden neon-glow">
+    <div
+      ref={ref}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0) scale(1)" : "translateY(30px) scale(0.97)",
+        transition: "opacity 0.6s ease-out 0.1s, transform 0.6s ease-out 0.1s",
+      }}
+      className="glass rounded-2xl overflow-hidden neon-glow"
+    >
       <div className="px-5 py-4 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-3">
           <span className="text-2xl">⚡</span>
@@ -54,7 +64,7 @@ const MuniCalculator = () => {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, i) => (
+            {rows.map((row) => (
               <tr key={row.item} className="border-t border-border/30 hover:bg-primary/5 transition-colors duration-200">
                 <td className="px-5 py-3 font-semibold">{row.item}</td>
                 <td className="px-5 py-3 text-right font-mono text-foreground/70">{formatNumber(row.armaVal)}</td>
